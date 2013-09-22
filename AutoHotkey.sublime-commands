@@ -10,11 +10,6 @@
 		"args": { "param": "$win_spy" }
 	},
 	{
-		"caption": "AutoHotkey: RegEx Tester",
-		"command": "ahk",
-		"args": { "param": "C:\\Users\\PC\\Documents\\AutoHotkey\\Tools\\RegEx-Tester-rbrtryn\\RegEx Tester.ahk" }
-	},
-	{
 		"caption": "AutoHotkey: Build",
 		"command": "ahk"
 	}

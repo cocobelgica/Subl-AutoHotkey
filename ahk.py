@@ -36,7 +36,7 @@ class ahk(sublime_plugin.TextCommand):
 		if os.path.splitext(script)[1] != ".ahk":
 			return False
 		
-		sp = subprocess.Popen([ahk_exe, "/ErrorStdOut", script], cwd=os.path.dirname(script))
+		sp = subprocess.Popen([ahk_exe, script], cwd=os.path.dirname(script))
 		return sp.pid
 
 	

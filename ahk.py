@@ -19,7 +19,7 @@ class AhkProcListener(object):
 class AhkAsyncProcess(object):
 	
 	def __init__(self, target, is_file, listener, ahk_exe):
-		self.ahk_exe = ahk_exe
+		self.ahk_exe = os.path.normpath(ahk_exe)
 		self.listener = listener
 		
 		if is_file:
@@ -28,9 +28,11 @@ class AhkAsyncProcess(object):
 			self.run_pipe(target)
 
 	def run_file(self, script):
+		cmd = [self.ahk_exe, "/ErrorStdOut", script]
+		print("Running " + " ".join(cmd))
 		self.start_time = time.time()
 
-		self.proc = subprocess.Popen([self.ahk_exe, "/ErrorStdOut", script],
+		self.proc = subprocess.Popen(args=cmd,
 		                             cwd=os.path.dirname(script),
 		                             stdout=subprocess.PIPE,
 		                             stderr=subprocess.PIPE,
@@ -48,12 +50,10 @@ class AhkAsyncProcess(object):
 		PIPE_UNLIMITED_INSTANCES = 255
 		INVALID_HANDLE_VALUE = -1
 
-		self.start_time = time.time()
-		
-		pipename = "AHK_" + str(windll.kernel32.GetTickCount())
-		pipe = "\\\\.\\pipe\\" + pipename
+		script_name = "AHK_" + str(windll.kernel32.GetTickCount())
+		pipe_name = "\\\\.\\pipe\\" + script_name
 
-		__PIPE_GA_ = windll.kernel32.CreateNamedPipeW(c_wchar_p(pipe),
+		__PIPE_GA_ = windll.kernel32.CreateNamedPipeW(c_wchar_p(pipe_name),
 		                                              PIPE_ACCESS_OUTBOUND,
 		                                              0,
 		                                              PIPE_UNLIMITED_INSTANCES,
@@ -62,7 +62,7 @@ class AhkAsyncProcess(object):
 		                                              0,
 		                                              None)
 
-		__PIPE_ = windll.kernel32.CreateNamedPipeW(c_wchar_p(pipe),
+		__PIPE_ = windll.kernel32.CreateNamedPipeW(c_wchar_p(pipe_name),
 		                                           PIPE_ACCESS_OUTBOUND,
 		                                           0,
 		                                           PIPE_UNLIMITED_INSTANCES,
@@ -75,7 +75,11 @@ class AhkAsyncProcess(object):
 			print("Failed to create named pipe.")
 			return False
 
-		self.proc = subprocess.Popen([self.ahk_exe, "/ErrorStdOut", pipe],
+		cmd = [self.ahk_exe, "/ErrorStdOut", pipe_name]
+		print("Running " + " ".join(cmd))
+		self.start_time = time.time()
+
+		self.proc = subprocess.Popen(args=cmd,
 		                             cwd=os.path.expanduser("~"),
 		                             stdout=subprocess.PIPE,
 		                             stderr=subprocess.PIPE,
@@ -83,7 +87,7 @@ class AhkAsyncProcess(object):
 		                             universal_newlines=True)
 		
 		if not self.proc.pid:
-			print('Could not open file: "' + pipe + '"')
+			print('Could not open file: "' + pipe_name + '"')
 
 		windll.kernel32.ConnectNamedPipe(__PIPE_GA_, None)
 		windll.kernel32.CloseHandle(__PIPE_GA_)

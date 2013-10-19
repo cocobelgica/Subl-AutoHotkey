@@ -18,18 +18,30 @@ class AhkProcListener(object):
 
 class AhkAsyncProcess(object):
 	
-	def __init__(self, target, is_file, listener, ahk_exe):
+	def __init__(self, target, is_file, listener, ahk_exe, args="", include_print=True):
 		self.ahk_exe = os.path.normpath(ahk_exe)
 		self.listener = listener
 		
 		if is_file:
-			self.run_file(target)
+			self.run_file(target, args)
 		else:
-			self.run_pipe(target)
+			# append 'print()' function to AHK code
+			# function writes string to stdout which
+			# is captured by Sublime Text - useful for debugging
+			if include_print:
+				ahk_print = ('print(str) {\n'
+				             '\tif !DllCall("GetStdHandle", "Int", -11, "Ptr")\n'
+				             '\t\treturn false\n'
+				             '\tFileAppend, % str . "`n", *\n}')
+				target += "\n\n{}".format(ahk_print)
+			self.run_pipe(target, args)
 
-	def run_file(self, script):
+	def run_file(self, script, args=""):
 		cmd = [self.ahk_exe, "/ErrorStdOut", script]
-		print("Running " + " ".join(cmd))
+		if args:
+			cmd.extend(args)
+		print("Running " + " ".join(cmd[:3]) +
+		      "".join(" {!r}".format(x) for x in args))
 		self.start_time = time.time()
 
 		self.proc = subprocess.Popen(args=cmd,
@@ -45,7 +57,7 @@ class AhkAsyncProcess(object):
 		if self.proc.stderr:
 			threading.Thread(target=self.read_stderr).start()
 
-	def run_pipe(self, code):
+	def run_pipe(self, code, args=""):
 		PIPE_ACCESS_OUTBOUND = 0x00000002
 		PIPE_UNLIMITED_INSTANCES = 255
 		INVALID_HANDLE_VALUE = -1
@@ -76,7 +88,10 @@ class AhkAsyncProcess(object):
 			return False
 
 		cmd = [self.ahk_exe, "/ErrorStdOut", pipe_name]
-		print("Running " + " ".join(cmd))
+		if args:
+			cmd.extend(args)
+		print("Running " + " ".join(cmd[:3]) +
+		      "".join(" {!r}".format(x) for x in args))
 		self.start_time = time.time()
 
 		self.proc = subprocess.Popen(args=cmd,
@@ -139,30 +154,30 @@ class AhkAsyncProcess(object):
 
 class ahkCommand(sublime_plugin.TextCommand, AhkProcListener):
 	
-	def run(self, edit, param=None, ahk_exe="C:/Program Files/AutoHotkey/AutoHotkey.exe"):
-		if param is None:
+	def run(self, edit, cmd=None, ahk_exe="C:/Program Files/AutoHotkey/AutoHotkey.exe", **kwargs):
+		if cmd is None:
 			file_name = self.view.file_name()
 			if file_name:
-				param = file_name
+				cmd = file_name
 				is_file = True
 			else:
 				is_file = False
 
-			self.build(param, is_file, ahk_exe)
+			self.build(cmd, is_file, ahk_exe, **kwargs)
 
-		elif param == "$help":
+		elif cmd == "$help":
 			subprocess.Popen(["C:/Windows/hh.exe", "C:/Program Files/AutoHotkey/AutoHotkey.chm"])
 
-		elif param == "$win_spy":
+		elif cmd == "$win_spy":
 			subprocess.Popen(["C:/Program Files/AutoHotkey/AU3_Spy.exe"])
 
-		elif os.path.isfile(param):
-			self.build(param, True, ahk_exe)
+		elif os.path.isfile(cmd):
+			self.build(cmd, True, ahk_exe, **kwargs)
 
 		else:
-			self.build(param, False, ahk_exe)
+			self.build(cmd, False, ahk_exe, **kwargs)
 
-	def build(self, target, is_file, ahk_exe):
+	def build(self, target, is_file, ahk_exe, **kwargs):
 		if is_file:
 			if os.path.splitext(target)[1] != ".ahk":
 				print("[Finished - Not an AHK script]")
@@ -180,19 +195,19 @@ class ahkCommand(sublime_plugin.TextCommand, AhkProcListener):
 					target = target.replace("\\n", "\n")
 		
 		try:
-			self.proc = AhkAsyncProcess(target, is_file, self, ahk_exe)
+			self.proc = AhkAsyncProcess(target, is_file, self, ahk_exe, **kwargs)
 		except Exception as e:
-			self.print_data(None, str(e))
+			self.print_data(None, str(e).encode('utf-8'))
 
 	def print_data(self, proc, data):
-		output = data.decode("UTF-8")
+		output = data.decode('utf-8')
 		output = output.replace("\r\n", "\n").replace("\r", "\n")
 		print(output, end="")
 
 	def finish(self, proc):
 		elapsed = time.time() - proc.start_time
 		exit_code = proc.exit_code()
-		print("[Finished in %.1fs with exit code %d]" % (elapsed, exit_code))
+		print("[Finished in {:.1f}s with exit code {:d}]".format(elapsed, exit_code))
 
 	def on_data(self, proc, data):
 		sublime.set_timeout(functools.partial(self.print_data, proc, data), 0)

@@ -18,12 +18,12 @@ class AhkProcListener(object):
 
 class AhkAsyncProcess(object):
 	
-	def __init__(self, target, is_file, listener, ahk_exe, args="", include_print=True):
+	def __init__(self, target, is_file, listener, ahk_exe, start_dir=False, args="", include_print=False):
 		self.ahk_exe = os.path.normpath(ahk_exe)
 		self.listener = listener
 		
 		if is_file:
-			self.run_file(target, args)
+			self.run_file(target, start_dir, args)
 		else:
 			# append 'print()' function to AHK code
 			# function writes string to stdout which
@@ -34,18 +34,19 @@ class AhkAsyncProcess(object):
 				             '\t\treturn false\n'
 				             '\tFileAppend, % str . "`n", *\n}')
 				target += "\n\n{}".format(ahk_print)
-			self.run_pipe(target, args)
+			self.run_pipe(target, start_dir, args)
 
-	def run_file(self, script, args=""):
+	def run_file(self, script, start_dir, args=""):
 		cmd = [self.ahk_exe, "/ErrorStdOut", script]
+		if not start_dir: start_dir = os.path.dirname(script)
 		if args:
 			cmd.extend(args)
 		print("Running " + " ".join(cmd[:3]) +
 		      "".join(" {!r}".format(x) for x in args))
 		self.start_time = time.time()
-
+		
 		self.proc = subprocess.Popen(args=cmd,
-		                             cwd=os.path.dirname(script),
+		                             cwd=start_dir,
 		                             stdout=subprocess.PIPE,
 		                             stderr=subprocess.PIPE,
 		                             shell=True,
@@ -57,11 +58,11 @@ class AhkAsyncProcess(object):
 		if self.proc.stderr:
 			threading.Thread(target=self.read_stderr).start()
 
-	def run_pipe(self, code, args=""):
+	def run_pipe(self, code, start_dir, args=""):
 		PIPE_ACCESS_OUTBOUND = 0x00000002
 		PIPE_UNLIMITED_INSTANCES = 255
 		INVALID_HANDLE_VALUE = -1
-
+		
 		script_name = "AHK_" + str(windll.kernel32.GetTickCount())
 		pipe_name = "\\\\.\\pipe\\" + script_name
 
@@ -88,14 +89,15 @@ class AhkAsyncProcess(object):
 			return False
 
 		cmd = [self.ahk_exe, "/ErrorStdOut", pipe_name]
+		if not start_dir: start_dir = os.path.expanduser("~")
 		if args:
 			cmd.extend(args)
 		print("Running " + " ".join(cmd[:3]) +
 		      "".join(" {!r}".format(x) for x in args))
 		self.start_time = time.time()
-
+		
 		self.proc = subprocess.Popen(args=cmd,
-		                             cwd=os.path.expanduser("~"),
+		                             cwd=start_dir,
 		                             stdout=subprocess.PIPE,
 		                             stderr=subprocess.PIPE,
 		                             shell=True,
@@ -158,12 +160,20 @@ class ahkCommand(sublime_plugin.TextCommand, AhkProcListener):
 		if cmd is None:
 			file_name = self.view.file_name()
 			if file_name:
-				cmd = file_name
-				is_file = True
+				if self.view.is_dirty():
+					cmd = None
+					is_file = False
+					kwargs['start_dir'] = os.path.dirname(file_name)
+				else:
+					cmd = file_name
+					is_file = True
 			else:
 				is_file = False
 
 			self.build(cmd, is_file, ahk_exe, **kwargs)
+
+		elif cmd == "$quick_run":
+			self.build(None, False, ahk_exe, **kwargs)
 
 		elif cmd == "$help":
 			subprocess.Popen(["C:/Windows/hh.exe", "C:/Program Files/AutoHotkey/AutoHotkey.chm"])
@@ -185,15 +195,17 @@ class ahkCommand(sublime_plugin.TextCommand, AhkProcListener):
 		
 		else:
 			if target is None:
+				view = self.view
+				if view != sublime.active_window().active_view():
+					view = sublime.active_window().active_view()
+
 				re.IGNORECASE
-				if not re.search("(AutoHotkey|Plain text)", self.view.settings().get('syntax')):
+				if not re.search("(AutoHotkey|Plain text)", view.settings().get("syntax")):
 					print("[Finished - Not an AHK code]")
 					return False
 				
-				target = self.view.substr(sublime.Region(0, self.view.size()))
-				if self.view != sublime.active_window().active_view():
-					target = target.replace("\\n", "\n")
-		
+				target = view.substr(sublime.Region(0, view.size()))
+
 		try:
 			self.proc = AhkAsyncProcess(target, is_file, self, ahk_exe, **kwargs)
 		except Exception as e:
@@ -207,6 +219,8 @@ class ahkCommand(sublime_plugin.TextCommand, AhkProcListener):
 	def finish(self, proc):
 		elapsed = time.time() - proc.start_time
 		exit_code = proc.exit_code()
+		while exit_code is None:
+			exit_code = proc.exit_code()
 		print("[Finished in {:.1f}s with exit code {:d}]".format(elapsed, exit_code))
 
 	def on_data(self, proc, data):

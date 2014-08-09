@@ -15,174 +15,1037 @@
     <key>patterns</key>
     <array>
         <dict>
-            <!--key>captures</key>
+            <key>include</key>
+            <string>#comment_line</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#comment_block</string>
+        </dict>
+
+        <dict>
+            <key>match</key>
+            <string>\b(?i:(0x\h*))</string>
+            <key>name</key>
+            <string>constant.numeric.integer.hexadecimal.ahk</string>
+        </dict>
+
+        <dict>
+            <key>match</key>
+            <string>\b(?i:(\d+\.\d*(e[\-\+]?\d+)?))(?=[^a-zA-Z_])</string>
+            <key>name</key>
+            <string>constant.numeric.float.ahk</string>
+        </dict>
+        <dict>
+            <key>match</key>
+            <string>(?&lt;=[^0-9a-zA-Z_])(?i:(\.\d+(e[\-\+]?\d+)?))</string>
+            <key>name</key>
+            <string>constant.numeric.float.ahk</string>
+        </dict>
+
+        <dict>
+            <key>match</key>
+            <string>\b([1-9]+[0-9]*|0)</string>
+            <key>name</key>
+            <string>constant.numeric.integer.decimal.ahk</string>
+        </dict>
+
+        <dict>
+            <key>match</key>
+            <string>\b(?i:(global)|(local)|(static)|(var))\b</string>
+            <key>captures</key>
             <dict>
                 <key>1</key>
                 <dict>
                     <key>name</key>
-                    <string>punctuation.definition.comment.ahk</string>
+                    <string>storage.modifier.global.ahk</string>
                 </dict>
-            </dict-->
-            <key>name</key>
-            <string>comment.line.ahk</string>
-            <key>match</key>
-            <string>(^|[\s\t]+)(;)(?!::).*$\n?</string>
-        </dict>
-        <dict>
-            <key>begin</key>
-            <string>^([\s\t]+)?/\*([\s\t]+)?$</string>
-            <!--key>captures</key>
-            <dict>
-                <key>0</key>
-                <dict>
-                    <key>name</key>
-                    <string>punctuation.definition.comment.ahk</string>
-                </dict>
-            </dict-->
-            <key>end</key>
-            <string>^([\s\t]+)?\*/([\s\t]+)?$</string>
-            <key>name</key>
-            <string>comment.block.ahk</string>
-        </dict>
-        <dict>
-            <key>name</key>
-            <string>keyword.control.return.ahk</string>
-            <key>match</key>
-            <string>(\b|^)(?i)(return)\b</string>
-        </dict>
-        <dict>
-            <key>name</key>
-            <string>entity.name.label.ahk</string>
-            <key>match</key>
-            <string>(\b|^)(?i)(gosub|goto)\b</string>
-        </dict>
-        <dict>
-            <key>name</key>
-            <string>meta.structure.linebreak.ahk</string>
-            <key>match</key>
-            <string>(`n|`r)</string>
-        </dict>
-        <dict>
-            <key>name</key>
-            <string>keyword.command.ahk</string>
-            <key>match</key>
-            <string>(\b|^)(?i)(autotrim|blockinput|clipwait|control|controlclick|controlfocus|controlget|controlgetfocus|controlgetpos|controlgettext|controlmove|controlsend|controlsendraw|controlsettext|coordmode|critical|detecthiddentext|detecthiddenwindows|drive|driveget|drivespacefree|edit|endrepeat|envadd|envdiv|envget|envmult|envset|envsub|envupdate|fileappend|filecopy|filecopydir|filecreatedir|filecreateshortcut|filedelete|filegetattrib|filegetshortcut|filegetsize|filegettime|filegetversion|fileinstall|filemove|filemovedir|fileread|filereadline|filerecycle|filerecycleempty|fileremovedir|fileselectfile|fileselectfolder|filesetattrib|filesettime|formattime|getkeystate|groupactivate|groupadd|groupclose|groupdeactivate|gui|guicontrol|guicontrolget|hideautoitwin|hotkey|imagesearch|inidelete|iniread|iniwrite|input|inputbox|keyhistory|keywait|listhotkeys|listlines|listvars|menu|mouseclick|mouseclickdrag|mousegetpos|mousemove|msgbox|outputdebug|pixelgetcolor|pixelsearch|postmessage|process|progress|random|regdelete|regread|regwrite|reload|run|runas|runwait|send|sendevent|sendinput|sendlevel|sendmessage|sendmode|sendplay|sendraw|setbatchlines|setcapslockstate|setcontroldelay|setdefaultmousespeed|setenv|setformat|setkeydelay|setmousedelay|setnumlockstate|setscrolllockstate|setstorecapslockmode|settitlematchmode|setwindelay|setworkingdir|shutdown|sort|soundbeep|soundget|soundgetwavevolume|soundplay|soundset|soundsetwavevolume|splashimage|splashtextoff|splashtexton|splitpath|statusbargettext|statusbarwait|stringcasesense|stringgetpos|stringleft|stringlen|stringlower|stringmid|stringreplace|stringright|stringsplit|stringtrimleft|stringtrimright|stringupper|sysget|thread|tooltip|transform|traytip|urldownloadtofile|winactivate|winactivatebottom|winclose|winget|wingetactivestats|wingetactivetitle|wingetclass|wingetpos|wingettext|wingettitle|winhide|winkill|winmaximize|winmenuselectitem|winminimize|winminimizeall|winminimizeallundo|winmove|winrestore|winset|winsettitle|winshow|winwait|winwaitactive|winwaitclose|winwaitnotactive|fileencoding|setregview)\b</string>
-        </dict>
-        <dict>
-            <key>name</key>
-            <string>keyword.control.ahk</string>
-            <key>match</key>
-            <string>(\b|^)(?i)(break|continue|else|exit|extends|exitapp|gosub|goto|loop|onexit|pause|repeat|return|settimer|sleep|suspend|static|global|local|var|byref|while|until|for|class|try|catch|throw|new)\b</string>
-        </dict>
-
-        <dict>
-            <key>name</key>
-            <string>entity.name.function</string>
-            <key>match</key>
-            <string>(\b|^)(?i)(\w+(?=\()|(abs|acos|asc|asin|atan|ceil|chr|cos|dllcall|exp|fileexist|floor|getkeystate|numget|numput|registercallback|il_add|il_create|il_destroy|instr|islabel|isfunc|ln|log|lv_add|lv_delete|lv_deletecol|lv_getcount|lv_getnext|lv_gettext|lv_insert|lv_insertcol|lv_modify|lv_modifycol|lv_setimagelist|mod|onmessage|round|regexmatch|regexreplace|sb_seticon|sb_setparts|sb_settext|sin|sqrt|strlen|strsplit|substr|tan|tv_add|tv_delete|tv_getchild|tv_getcount|tv_getnext|tv_get|tv_getparent|tv_getprev|tv_getselection|tv_gettext|tv_modify|tv_setimagelist|varsetcapacity|winactive|winexist|trim|ltrim|rtrim|fileopen|strget|strput|object|array|isobject|objinsert|objremove|objminindex|objmaxindex|objsetcapacity|objgetcapacity|objgetaddress|objnewenum|objaddref|objrelease|objhaskey|objclone|_insert|_remove|_minindex|_maxindex|_setcapacity|_getcapacity|_getaddress|_newenum|_addref|_release|_haskey|_clone|comobjcreate|comobjget|comobjconnect|comobjerror|comobjactive|comobjenwrap|comobjunwrap|comobjparameter|comobjmissing|comobjtype|comobjvalue|comobjarray|comobjquery|comobjflags|func|getkeyname|getkeyvk|getkeysc|isbyref|exception)\b)</string>
-        </dict>
-
-        <dict>
-            <key>name</key>
-            <string>constant.language</string>
-            <key>match</key>
-            <string>(\b|^)(?i)([a-z0-9_;\-\.\,\\\/]+(?=::))|((shift|lshift|rshift|alt|lalt|ralt|control|lcontrol|rcontrol|ctrl|lctrl|rctrl|lwin|rwin|appskey|altdown|altup|shiftdown|shiftup|ctrldown|ctrlup|lwindown|lwinup|rwindown|rwinup|lbutton|rbutton|mbutton|wheelup|wheelleft|wheelright|wheeldown|xbutton1|xbutton2|joy1|joy2|joy3|joy4|joy5|joy6|joy7|joy8|joy9|joy10|joy11|joy12|joy13|joy14|joy15|joy16|joy17|joy18|joy19|joy20|joy21|joy22|joy23|joy24|joy25|joy26|joy27|joy28|joy29|joy30|joy31|joy32|joyx|joyy|joyz|joyr|joyu|joyv|joypov|joyname|joybuttons|joyaxes|joyinfo|space|tab|enter|escape|esc|backspace|bs|delete|del|insert|ins|pgup|pgdn|home|end|up|down|left|right|printscreen|ctrlbreak|pause|scrolllock|capslock|numlock|numpad0|numpad1|numpad2|numpad3|numpad4|numpad5|numpad6|numpad7|numpad8|numpad9|numpadmult|numpadadd|numpadsub|numpaddiv|numpaddot|numpaddel|numpadins|numpadclear|numpadup|numpaddown|numpadleft|numpadright|numpadhome|numpadend|numpadpgup|numpadpgdn|numpadenter|f1|f2|f3|f4|f5|f6|f7|f8|f9|f10|f11|f12|f13|f14|f15|f16|f17|f18|f19|f20|f21|f22|f23|f24|browser_back|browser_forward|browser_refresh|browser_stop|browser_search|browser_favorites|browser_home|volume_mute|volume_down|volume_up|media_next|media_prev|media_stop|media_play_pause|launch_mail|launch_media|launch_app1|launch_app2)\b)</string>
-        </dict>
-
-        <dict>
-            <key>name</key>
-            <string>keyword.other.ahk</string>
-            <key>match</key>
-            <string>(\b|^)(?i)(pixel|mouse|screen|relative|rgb|ltrim|rtrim|join|low|belownormal|normal|abovenormal|high|realtime|ahk_id|ahk_pid|ahk_class|ahk_exe|ahk_group|between|contains|in|is|integer|float|integerfast|floatfast|number|digit|xdigit|alpha|upper|lower|alnum|time|date|not|or|and|alwaysontop|topmost|top|bottom|transparent|transcolor|redraw|region|id|idlast|processname|minmax|controllist|count|list|capacity|statuscd|eject|lock|unlock|label|filesystem|label|setlabel|serial|type|status|static|global|local|byref|seconds|minutes|hours|days|read|parse|logoff|close|error|single|tray|add|rename|check|uncheck|togglecheck|enable|disable|toggleenable|default|nodefault|standard|nostandard|color|delete|deleteall|icon|noicon|tip|click|show|mainwindow|nomainwindow|useerrorlevel|text|picture|pic|groupbox|button|checkbox|radio|dropdownlist|ddl|combobox|listbox|listview|datetime|monthcal|updown|slider|tab|tab2|statusbar|treeview|iconsmall|tile|report|sortdesc|nosort|nosorthdr|grid|hdr|autosize|range|xm|ym|ys|xs|xp|yp|font|resize|owner|submit|nohide|minimize|maximize|restore|noactivate|na|cancel|destroy|center|margin|maxsize|minsize|owndialogs|guiescape|guiclose|guisize|guicontextmenu|guidropfiles|tabstop|section|altsubmit|wrap|hscroll|vscroll|border|top|bottom|buttons|expand|first|imagelist|lines|wantctrla|wantf2|vis|visfirst|number|uppercase|lowercase|limit|password|multi|wantreturn|group|background|bold|italic|strike|underline|norm|backgroundtrans|theme|caption|delimiter|minimizebox|maximizebox|sysmenu|toolwindow|flash|style|exstyle|check3|checked|checkedgray|readonly|password|hidden|left|right|center|notab|section|move|focus|hide|choose|choosestring|text|pos|enabled|disabled|visible|lastfound|lastfoundexist|alttab|shiftalttab|alttabmenu|alttabandmenu|alttabmenudismiss|notimers|interrupt|priority|waitclose|blind|raw|unicode|deref|pow|bitnot|bitand|bitor|bitxor|bitshiftleft|bitshiftright|yes|no|ok|cancel|abort|retry|ignore|force|tryagain|on|off|alwayson|alwaysoff|all|regex|hkey_local_machine|hkey_users|hkey_current_user|hkey_classes_root|hkey_current_config|hklm|hku|hkcu|hkcr|hkcc|reg_sz|reg_expand_sz|reg_multi_sz|reg_dword|reg_qword|reg_binary|reg_link|reg_resource_list|reg_full_resource_descriptor|reg_resource_requirements_list|reg_dword_big_endian)\b</string>
-        </dict>
-
-        <dict>
-            <key>name</key>
-            <string>keyword.operator.ahk</string>
-            <key>match</key>
-            <string>=|==|&lt;&gt;|:=|&lt;|&gt;|\*|\/|\+|\%|:|\?|\-|\^|\!|\#|\~</string>
-        </dict>
-
-        <dict>
-            <key>name</key>
-            <string>storage.type.primitive.array.java</string>
-            <key>match</key>
-            <string>(\b|^)(?i)(%)(([^%,]|%%)*)(%)|(a_ahkpath|a_ahkversion|a_appdata|a_appdatacommon|a_autotrim|a_batchlines|a_caretx|a_carety|a_computername|a_controldelay|a_cursor|a_dd|a_ddd|a_dddd|a_defaultmousespeed|a_desktop|a_desktopcommon|a_detecthiddentext|a_detecthiddenwindows|a_endchar|a_eventinfo|a_exitreason|a_formatfloat|a_formatinteger|a_gui|a_guievent|a_guicontrol|a_guicontrolevent|a_guiheight|a_guiwidth|a_guix|a_guiy|a_hour|a_iconfile|a_iconhidden|a_iconnumber|a_icontip|a_index|a_ipaddress1|a_ipaddress2|a_ipaddress3|a_ipaddress4|a_isadmin|a_iscompiled|a_issuspended|a_keydelay|a_language|a_lasterror|a_linefile|a_linenumber|a_loopfield|a_loopfileattrib|a_loopfiledir|a_loopfileext|a_loopfilefullpath|a_loopfilelongpath|a_loopfilename|a_loopfileshortname|a_loopfileshortpath|a_loopfilesize|a_loopfilesizekb|a_loopfilesizemb|a_loopfiletimeaccessed|a_loopfiletimecreated|a_loopfiletimemodified|a_loopreadline|a_loopregkey|a_loopregname|a_loopregsubkey|a_loopregtimemodified|a_loopregtype|a_mday|a_min|a_mm|a_mmm|a_mmmm|a_mon|a_mousedelay|a_msec|a_mydocuments|a_now|a_nowutc|a_numbatchlines|a_ostype|a_osversion|a_priorhotkey|a_programfiles|a_programs|a_programscommon|a_ptrsize|a_screendpi|a_screenheight|a_screenwidth|a_scriptdir|a_scriptfullpath|a_scriptname|a_sec|a_space|a_startmenu|a_startmenucommon|a_startup|a_startupcommon|a_stringcasesense|a_tab|a_temp|a_thishotkey|a_thismenu|a_thismenuitem|a_thismenuitempos|a_tickcount|a_timeidle|a_timeidlephysical|a_timesincepriorhotkey|a_timesincethishotkey|a_titlematchmode|a_titlematchmodespeed|a_username|a_wday|a_windelay|a_windir|a_workingdir|a_yday|a_year|a_yweek|a_yyyy|clipboard|clipboardall|comspec|errorlevel|programfiles|true|false|a_thisfunc|a_thislabel|a_ispaused|a_iscritical|a_isunicode|a_ptrsize|a_scripthwnd|a_priorkey|a_is64bitos|a_regview|clipboard|clipboardall|comspec|errorlevel|)\b</string>
-        </dict>
-        <dict>
-            <key>name</key>
-            <!-- <string>meta.structure.dictionary.json string.quoted.double.json</string> -->
-            <string>punctuation.ahk</string>
-
-            <key>match</key>
-            <string>#|`|::|,|\{|\}|\(|\)</string>
-        </dict>
-        <dict>
-            <key>match</key>
-            <string>\b((0(x|X)[0-9a-fA-F]*)|(([a-zA-Z][0-9]+)|([0-9]+\.?[0-9]*)|(\.[0-9]+))((e|E)(\+|-)?[0-9]+)?)(L|l|UL|ul|u|U|F|f|ll|LL|ull|ULL)?\b</string>
-            <key>name</key>
-            <string>constant.numeric.source.ahk</string>
-        </dict>
-        <dict>
-            <key>name</key>
-            <string>storage.type.primitive.array.java</string>
-            <key>match</key>
-            <string>(%)(([^%,:]|%%)*%|\s\S+|\s(?=\"))</string>
-        </dict>
-        <dict>
-            <key>captures</key>
-            <dict>
                 <key>2</key>
                 <dict>
                     <key>name</key>
-                    <string>string.quoted.ahk</string>
+                    <string>storage.modifier.local.ahk</string>
                 </dict>
-                <key>1</key>
+                <key>3</key>
                 <dict>
                     <key>name</key>
-                    <string>punctuation.quote.double</string>
+                    <string>storage.modifier.static.ahk</string>
                 </dict>
                 <key>4</key>
                 <dict>
                     <key>name</key>
-                    <string>punctuation.quote.double</string>
+                    <string>storage.modifier.var.v2.ahk</string>
                 </dict>
             </dict>
             <key>name</key>
-            <string>quoted.string.line.ahk</string>
+            <string>storage.modifier.variable-scope.ahk</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#script_directives</string>
+        </dict>
+
+        <dict>
+            <key>comment</key>
+            <string>keywords that delimit flow blocks or alter flow from within a block</string>
+            <key>name</key>
+            <string>keyword.control.flow.ahk</string>
             <key>match</key>
-            <string>(")(([^"]|"")*)(")</string>
+            <string>\b(?i:break|continue|else|gosub|goto|loop|return|while|until|for|try|catch|throw|finally|if|ifequal|ifexist|ifgreater|ifgreaterorequal|ifinstring|ifless|iflessorequal|ifmsgbox|ifnotequal|ifnotexist|ifnotinstring|ifwinactive|ifwinexist|ifwinnotactive|ifwinnotexist)\b</string>
+        </dict>
+
+        <dict>
+            <key>comment</key>
+            <string>keyword operators that evaluate to True or False</string>
+            <key>match</key>
+            <string>(?:&amp;&amp;|\|\|)|\b(?i:and|is|not|or)\b</string>
+            <key>name</key>
+            <string>keyword.operator.logical.ahk</string>
+        </dict>
+
+        <dict>
+            <key>match</key>
+            <string>&lt;\=|&gt;\=|\=|\=\=|&lt;|&gt;|\!\=|&lt;&gt;|~=</string>
+            <key>name</key>
+            <string>keyword.operator.comparison.ahk</string>
+        </dict>
+
+        <dict>
+            <key>match</key>
+            <string>\+=|\-=|\*=|//?=|\.=|\|=|&amp;=|\^=|&gt;&gt;=|&lt;&lt;=</string>
+            <key>name</key>
+            <string>keyword.operator.assignment.augmented.ahk</string>
+        </dict>
+
+        <dict>
+            <key>match</key>
+            <string>\+|\-|\*|\*\*|/|//|&lt;&lt;|&gt;&gt;|&amp;|\||\^|~</string>
+            <key>name</key>
+            <string>keyword.operator.arithmetic.ahk</string>
+        </dict>
+
+        <dict>
+            <key>match</key>
+            <string>:=</string>
+            <key>name</key>
+            <string>keyword.operator.assignment.ahk</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#builtin_commands</string>
         </dict>
 
         <dict>
             <key>begin</key>
-            <string>^[\s\t]*\(</string>
+            <string>(%)[ \t]</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.force-expr.begin.ahk</string>
+                </dict>
+            </dict>
             <key>end</key>
-            <string>^[\s\t]*\)</string>
+            <string>(,|$)</string>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>$self</string>
+                </dict>
+            </array>
             <key>name</key>
-            <string>string.unquoted.continuation.ahk</string>
+            <string>meta.force-expression.ahk</string>
         </dict>
 
         <dict>
+            <key>match</key>
+            <string>^\s*(?i)(class)\s+([a-z0-9_]+)(\s+(extends)\s+([a-z0-9\._]+))?</string>
             <key>captures</key>
             <dict>
                 <key>1</key>
                 <dict>
                     <key>name</key>
-                    <string>label.ahk</string>
+                    <string>storage.type.class.ahk</string>
                 </dict>
                 <key>2</key>
                 <dict>
                     <key>name</key>
-                    <string>punctuation.definition.label.ahk</string>
+                    <string>entity.name.type.class.ahk</string>
+                </dict>
+                <key>4</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.control.inheritance.begin.ahk</string>
+                </dict>
+                <key>5</key>
+                <dict>
+                    <key>name</key>
+                    <string>entity.other.inherited-class.ahk</string>
                 </dict>
             </dict>
             <key>name</key>
-            <string>label.line.ahk</string>
+            <string>meta.class.ahk</string>
+        </dict>
+
+        <dict>
+            <key>begin</key>
+            <string>^\s*(?=[a-zA-Z_][a-zA-Z_0-9]*?\(.*\)\s*\{(?=(?:\s+(?:;[^$\r\n]*)?)?$\n))</string>
+            <key>end</key>
+            <string>(?&lt;!^)(\))\s*(\{)(?=(?:\s+(?:;[^$\r\n]*)?)?$\n)</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.parameters.end.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.section.function.begin.ahk</string>
+                </dict>
+            </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>begin</key>
+                    <string>(?=[a-zA-Z_][a-zA-Z_0-9]*\()</string>
+                    <!-- <key>contentName</key>
+                    <string>entity.name.function.ahk</string> -->
+                    <key>end</key>
+                    <string>(?![a-zA-Z_0-9])</string>
+                    <key>patterns</key>
+                    <array>
+                        <dict>
+                            <key>include</key>
+                            <string>#user_defined_functions</string>
+                        </dict>
+                    </array>
+                </dict>
+                <dict>
+                    <key>begin</key>
+                    <string>(\()</string>
+                    <key>beginCaptures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>punctuation.definition.parameters.begin.ahk</string>
+                        </dict>
+                    </dict>
+                    <key>contentName</key>
+                    <string>meta.function.parameters.ahk</string>
+                    <key>end</key>
+                    <string>(?=\)\s*\{(?:\s+(?:;[^$\r\n]*)?)?$\n)</string>
+                    <key>patterns</key>
+                    <array>
+                        <dict>
+                            <key>include</key>
+                            <string>#parameter_byref</string>
+                        </dict>
+                        <dict>
+                            <key>captures</key>
+                            <dict>
+                                <key>1</key>
+                                <dict>
+                                    <key>name</key>
+                                    <string>variable.parameter.required.function.ahk</string>
+                                </dict>
+                                <key>2</key>
+                                <dict>
+                                    <key>name</key>
+                                    <string>punctuation.separator.parameters.ahk</string>
+                                </dict>
+                            </dict>
+                            <key>match</key>
+                            <string>\b([a-zA-Z0-9_]*)\s*(?:(,)|(?=\)))</string>
+                        </dict>
+                        <dict>
+                            <key>include</key>
+                            <string>#parameter_byref_optional</string>
+                        </dict>
+                        <dict>
+                            <key>include</key>
+                            <string>#parameter_optional</string>
+                        </dict>
+                        <dict>
+                            <key>include</key>
+                            <string>#parameter_variadic</string>
+                        </dict>
+                    </array>
+                </dict>
+            </array>
+            <key>name</key>
+            <string>meta.function.otb-style.ahk</string>
+        </dict>
+
+        <dict>
+            <key>comment</key>
+            <string>option to precede begin pattern with '(?&lt;=^|[ \t,=\(:\.\[\{\|&amp;])'</string>
+            <key>begin</key>
+            <string>\b(?=[a-zA-Z_][a-zA-Z_0-9]*\()</string>
+            <key>end</key>
+            <string>(\()</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.parameters.begin.ahk</string>
+                </dict>
+            </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>begin</key>
+                    <string>(?=[a-zA-Z_][a-zA-Z_0-9]*)</string>
+                    <key>end</key>
+                    <string>(?![a-zA-Z_0-9])</string>
+                    <key>patterns</key>
+                    <array>
+                        <dict>
+                            <key>include</key>
+                            <string>#entity_name_function</string>
+                        </dict>
+                    </array>
+                </dict>
+            </array>
+            <key>name</key>
+            <string>meta.function-call.ahk</string>
+        </dict>
+
+        <dict>
+            <key>begin</key>
+            <string>^[ \t]*(?=[^ \t,`]+?(?&lt;!\:):(\s+(;[^$\r\n]*)?)?$)</string>
+            <key>end</key>
+            <string>$\n</string>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>begin</key>
+                    <string>\b([^ \t,`]+)\b(:)</string>
+                    <key>beginCaptures</key>
+                    <dict>
+                        <key>1</key>
+                        <dict>
+                            <key>name</key>
+                            <string>entity.name.section.label.ahk</string>
+                        </dict>
+                        <key>2</key>
+                        <dict>
+                            <key>name</key>
+                            <string>punctuation.definition.label.ahk</string>
+                        </dict>
+                    </dict>
+                    <key>end</key>
+                    <string>(?=$\n?)</string>
+                    <key>patterns</key>
+                    <array>
+                        <dict>
+                            <key>include</key>
+                            <string>#comment_line</string>
+                        </dict>
+                    </array>
+                </dict>
+            </array>
+            <key>name</key>
+            <string>meta.label.ahk</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#line_continuation_expression</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#language_variables</string>
+        </dict>
+
+        <dict>
             <key>match</key>
-            <string>^([^: ]+)(:)\s</string>
+            <string>\b(?i)(true|false)\b</string>
+            <key>name</key>
+            <string>constant.language.boolean.ahk</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#renamed_commands</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#keys_and_buttons</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#string_quoted_block</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#string_quoted_double</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#string_quoted_single</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
+            <string>#deref</string>
         </dict>
     </array>
+    
+    <key>repository</key>
+    <dict>
+        <key>comment_line</key>
+        <dict>
+            <key>match</key>
+            <string>(?&lt;=^|[ \t])(;).*$</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.comment.line.ahk</string>
+                </dict>
+            </dict>
+            <key>name</key>
+            <string>comment.line.semicolon.ahk</string>
+        </dict>
+
+        <key>comment_block</key>
+        <dict>
+            <key>begin</key>
+            <string>^[ \t]*(/\*)</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.comment.block.begin.ahk</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>^[ \t]*(\*/)</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.comment.block.end.ahk</string>
+                </dict>
+            </dict>
+            <key>name</key>
+            <string>comment.block.ahk</string>
+        </dict>
+        
+        <key>escaped_char</key>
+        <dict>
+            <key>match</key>
+            <string>(`,)|(`%)|(``)|(`;)|(`n)|(`r)|(`b)|(`t)|(`v)|(`a)|(`f)|(`")|(`')</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.comma.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.percent.ahk</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.accent.ahk</string>
+                </dict>
+                <key>4</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.semmicolon.ahk</string>
+                </dict>
+                <key>5</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.newline.ahk</string>
+                </dict>
+                <key>6</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.return.ahk</string>
+                </dict>
+                <key>7</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.backspace.ahk</string>
+                </dict>
+                <key>8</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.tab.ahk</string>
+                </dict>
+                <key>9</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.vertical-tab.ahk</string>
+                </dict>
+                <key>10</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.bell.ahk</string>
+                </dict>
+                <key>11</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.formfeed.ahk</string>
+                </dict>
+                <key>12</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.double-quote.v2.ahk</string>
+                </dict>
+                <key>13</key>
+                <dict>
+                    <key>name</key>
+                    <string>constant.character.escape.single-quote.v2.ahk</string>
+                </dict>
+            </dict>
+            <key>name</key>
+            <string>meta.escape-sequence.ahk</string>
+        </dict>
+
+        <key>string_quoted_block</key>
+        <dict>
+            <key>begin</key>
+            <!-- <string>("|')([ \t]+(;).*)?$\n?</string> -->
+            <string>("|')(?=(?:\s+(?:;[^\n]*)?)?$\n?)</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.string.begin.ahk</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>(\1)</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.string.end.ahk</string>
+                </dict>
+            </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>#comment_line</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#comment_block</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#line_continuation_string</string>
+                </dict>
+            </array>
+            <key>name</key>
+            <string>string.quoted.other.block.ahk</string>
+        </dict>
+
+        <key>string_quoted_double</key>
+        <dict>
+            <key>name</key>
+            <string>string.quoted.double.single-line.ahk</string>
+            <key>begin</key>
+            <string>"</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>0</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.string.begin.ahk</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>((?&lt;=")(")|")|(\n)</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.string.end.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>meta.empty-string.double.ahk</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>invalid.illegal.unclosed-string.ahk</string>
+                </dict>
+            </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>#escaped_char</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#deref</string>
+                </dict>
+                <!-- <dict>
+                    <key>include</key>
+                    <string>#escaped_double</string>
+                </dict> -->
+            </array>
+        </dict>
+
+        <key>string_quoted_single</key>
+        <dict>
+            <key>name</key>
+            <string>string.quoted.single.single-line.ahk</string>
+            <key>begin</key>
+            <string>(')</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.string.begin.ahk</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>((?&lt;=')(')|')|(\n)</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.string.end.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>meta.empty-string.single.ahk</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>invalid.illegal.unclosed-string.ahk</string>
+                </dict>
+            </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>#escaped_char</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#deref</string>
+                </dict>
+            </array>
+        </dict>
+        
+        <key>deref</key>
+        <dict>
+            <key>begin</key>
+            <string>(%)(?=[^$\n]+%)</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.deref.begin.ahk</string>
+                </dict>
+            </dict>
+            <key>contentName</key>
+            <string>variable.other.deref.ahk</string>
+            <key>end</key>
+            <string>((?&lt;=%)(%)|%)</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.deref.end.ahk</string>
+                </dict>
+            </dict>
+            <key>name</key>
+            <string>meta.deref-expression.ahk</string>
+        </dict>
+
+        <key>line_continuation_string</key>
+        <dict>
+            <key>begin</key>
+            <string>^\s*(\()(?=\s*(?i:(Q(?:uotes)?|[,%`\)]|Join[^\s]{0,15}|(?:Smart)?LTrim|(?:L|R)Trim0|C(?:om(?:ments?)?)?) ?)*$\n)</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.line-continuation.begin.ahk</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>^\s*(\))</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.line-continuation.end.ahk</string>
+                </dict>
+            </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>#line_continuation_options</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#escaped_char</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#deref</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#comment_line</string>
+                </dict>
+            </array>
+            <key>name</key>
+            <string>meta.line-continuation.string.ahk</string>
+        </dict>
+
+        <key>line_continuation_expression</key>
+        <dict>
+            <key>begin</key>
+            <string>^\s*(\()(?=\s*(?i:(Q(?:uotes)?|[,%`\)]|Join[^\s]{0,15}|(?:Smart)?LTrim|(?:L|R)Trim0|C(?:om(?:ments?)?)?) ?)*$\n)</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.line-continuation.begin.ahk</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>^\s*(\))</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.line-continuation.end.ahk</string>
+                </dict>
+            </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>#line_continuation_options</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#escaped_char</string>
+                </dict>
+                <!-- <dict>
+                    <key>include</key>
+                    <string>#deref</string>
+                </dict> -->
+                <dict>
+                    <key>include</key>
+                    <string>$self</string>
+                </dict>
+            </array>
+            <key>name</key>
+            <string>meta.line-continuation.expression.ahk</string>
+        </dict>
+
+        <key>line_continuation_options</key>
+        <dict>
+            <key>match</key>
+            <string>(?&lt;=\(|\s)(?i)(Q(?:uotes)?|[,%`\)]|Join[^\s]{0,15}|(?:Smart)?LTrim|(?:L|R)Trim0|C(?:om(?:ments?)?)?)(?=\s+|$\n)</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.other.line-continuation.option.ahk</string>
+                </dict>
+            </dict>
+        </dict>
+
+        <key>script_directives</key>
+        <dict>
+            <key>match</key>
+            <string>(?:^|\s*)(#)\b(?i)(?:(clipboardtimeout|commentflag|errorstdout|escapechar|hotkeyinterval|hotkeymodifiertimeout|hotstring|if|iftimeout|ifwinactive|ifwinexist|include|includeagain|inputlevel|installkeybdhook|installmousehook|keyhistory|ltrim|maxhotkeysperinterval|maxmem|maxthreads|maxthreadsbuffer|maxthreadsperhotkey|menumaskkey|noenv|notrayicon|persistent|singleinstance|usehook|warn|winactivateforce|ifwinnotactive|ifwinnotexist)|(mustdeclare))\b</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.directive.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.control.directive.ahk</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.control.directive.v2.ahk</string>
+                </dict>
+            </dict>
+            <key>name</key>
+            <string>meta.directives.ahk</string>
+        </dict>
+
+        <key>language_variables</key>
+        <dict>
+            <key>match</key>
+            <string>\b(?i:(a_ahkpath|a_ahkversion|a_appdata|a_appdatacommon|a_autotrim|a_batchlines|a_caretx|a_carety|a_computername|a_controldelay|a_cursor|a_dd|a_ddd|a_dddd|a_defaultmousespeed|a_desktop|a_desktopcommon|a_detecthiddentext|a_detecthiddenwindows|a_endchar|a_eventinfo|a_exitreason|a_fileencoding|a_formatfloat|a_formatinteger|a_gui|a_guicontrol|a_guicontrolevent|a_guievent|a_guiheight|a_guiwidth|a_guix|a_guiy|a_hour|a_iconfile|a_iconhidden|a_iconnumber|a_icontip|a_index|a_ipaddress1|a_ipaddress2|a_ipaddress3|a_ipaddress4|a_is64bitos|a_isadmin|a_iscompiled|a_iscritical|a_ispaused|a_issuspended|a_isunicode|a_keydelay|a_language|a_lasterror|a_linefile|a_linenumber|a_loopfield|a_loopfileattrib|a_loopfiledir|a_loopfileext|a_loopfilefullpath|a_loopfilelongpath|a_loopfilename|a_loopfileshortname|a_loopfileshortpath|a_loopfilesize|a_loopfilesizekb|a_loopfilesizemb|a_loopfiletimeaccessed|a_loopfiletimecreated|a_loopfiletimemodified|a_loopreadline|a_loopregkey|a_loopregname|a_loopregsubkey|a_loopregtimemodified|a_loopregtype|a_mday|a_min|a_mm|a_mmm|a_mmmm|a_mon|a_mousedelay|a_msec|a_mydocuments|a_now|a_nowutc|a_numbatchlines|a_ostype|a_osversion|a_priorhotkey|a_priorkey|a_programfiles|a_programs|a_programscommon|a_ptrsize|a_regview|a_screendpi|a_screenheight|a_screenwidth|a_scriptdir|a_scriptfullpath|a_scripthwnd|a_scriptname|a_sec|a_space|a_startmenu|a_startmenucommon|a_startup|a_startupcommon|a_stringcasesense|a_tab|a_temp|a_thisfunc|a_thishotkey|a_thislabel|a_thismenu|a_thismenuitem|a_thismenuitempos|a_tickcount|a_timeidle|a_timeidlephysical|a_timesincepriorhotkey|a_timesincethishotkey|a_titlematchmode|a_titlematchmodespeed|a_username|a_wday|a_windelay|a_windir|a_workingdir|a_yday|a_year|a_yweek|a_yyyy|base|clipboard|clipboardall|comspec|errorlevel|programfiles|this)|(a_args|a_comspec|a_initialworkingdir|a_loopfilepath|a_msgboxresult))\b</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>variable.language.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>variable.language.v2.ahk</string>
+                </dict>
+            </dict>
+        </dict>
+
+        <key>entity_name_function</key>
+        <dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>#builtin_functions</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#renamed_commands</string>
+                </dict>
+                <!-- <dict>
+                    <key>include</key>
+                    <string>#retained_commands</string>
+                </dict> -->
+                <dict>
+                    <key>include</key>
+                    <string>#user_defined_functions</string>
+                </dict>
+            </array>
+        </dict>
+
+        <key>builtin_functions</key>
+        <dict>
+            <key>match</key>
+            <string>\b(?i:__call|__delete|__get|__new|__set|_newenum|abs|acos|array|asc|asin|atan|ceil|chr|comobjactive|comobjarray|comobjconnect|comobjcreate|comobjenwrap|comobjerror|comobjflags|comobjget|comobjmissing|comobjparameter|comobjquery|comobjtype|comobjunwrap|comobjvalue|cos|dllcall|exception|exp|fileexist|fileopen|floor|func|getkeyname|getkeysc|getkeystate|getkeyvk|il_add|il_create|il_destroy|instr|isbyref|isfunc|islabel|isobject|ln|log|ltrim|lv_add|lv_delete|lv_deletecol|lv_getcount|lv_getnext|lv_gettext|lv_insert|lv_insertcol|lv_modify|lv_modifycol|lv_setimagelist|mod|numget|numput|objaddref|objclone|object|objgetaddress|objgetcapacity|objhaskey|objinsert|objmaxindex|objminindex|objnewenum|objrelease|objremove|objsetcapacity|onmessage|regexmatch|regexreplace|registercallback|round|rtrim|sb_seticon|sb_setparts|sb_settext|sin|sqrt|strget|strlen|strput|strsplit|substr|tan|trim|tv_add|tv_delete|tv_get|tv_getchild|tv_getcount|tv_getnext|tv_getparent|tv_getprev|tv_getselection|tv_gettext|tv_modify|tv_setimagelist|varsetcapacity|winactive|winexist)\b</string>
+            <key>name</key>
+            <string>entity.name.function.builtin.ahk</string>
+        </dict>
+        
+        <key>user_defined_functions</key>
+        <dict>
+            <key>match</key>
+            <string>[a-zA-Z_0-9]*</string>
+            <key>name</key>
+            <string>entity.name.function.user-defined.ahk</string>
+        </dict>
+
+        <key>builtin_commands</key>
+        <dict>
+            <key>match</key>
+            <string>\b(?i:autotrim|blockinput|clipwait|control|controlclick|controlfocus|controlget|controlgetfocus|controlgetpos|controlgettext|controlmove|controlsend|controlsendraw|controlsettext|coordmode|critical|detecthiddentext|detecthiddenwindows|drive|driveget|drivespacefree|edit|envadd|envdiv|envget|envmult|envset|envsub|envupdate|exit|exitapp|fileappend|filecopy|filecopydir|filecreatedir|filecreateshortcut|filedelete|fileencoding|filegetattrib|filegetshortcut|filegetsize|filegettime|filegetversion|fileinstall|filemove|filemovedir|fileread|filereadline|filerecycle|filerecycleempty|fileremovedir|fileselectfile|fileselectfolder|filesetattrib|filesettime|formattime|getkeystate|groupactivate|groupadd|groupclose|groupdeactivate|gui|guicontrol|guicontrolget|hotkey|imagesearch|inidelete|iniread|iniwrite|input|inputbox|keyhistory|keywait|listhotkeys|listlines|listvars|menu|mouseclick|mouseclickdrag|mousegetpos|mousemove|msgbox|onexit|outputdebug|pause|pixelgetcolor|pixelsearch|postmessage|process|progress|random|regdelete|regread|regwrite|reload|run|runas|runwait|send|sendevent|sendinput|sendlevel|sendmessage|sendmode|sendplay|sendraw|setbatchlines|setcapslockstate|setcontroldelay|setdefaultmousespeed|setenv|setformat|setkeydelay|setmousedelay|setnumlockstate|setregview|setscrolllockstate|setstorecapslockmode|settimer|settitlematchmode|setwindelay|setworkingdir|shutdown|sleep|sort|soundbeep|soundget|soundgetwavevolume|soundplay|soundset|soundsetwavevolume|splashimage|splashtextoff|splashtexton|splitpath|statusbargettext|statusbarwait|stringcasesense|stringgetpos|stringleft|stringlen|stringlower|stringmid|stringreplace|stringright|stringsplit|stringtrimleft|stringtrimright|stringupper|suspend|sysget|thread|tooltip|transform|traytip|urldownloadtofile|winactivate|winactivatebottom|winclose|winget|wingetactivestats|wingetactivetitle|wingetclass|wingetpos|wingettext|wingettitle|winhide|winkill|winmaximize|winmenuselectitem|winminimize|winminimizeall|winminimizeallundo|winmove|winrestore|winset|winsettitle|winshow|winwait|winwaitactive|winwaitclose|winwaitnotactive)\b</string>
+            <key>name</key>
+            <string>keyword.other.command.builtin.ahk</string>
+        </dict>
+
+        <key>renamed_commands</key>
+        <dict>
+            <key>match</key>
+            <string>\b(?i:click|comobject|dateadd|datediff|deref|dircopy|dircreate|dirdelete|direxist|dirmove|dirselect|download|fileselect|menuselect|monitorget|monitorgetcount|monitorgetname|monitorgetprimary|monitorgetworkarea|ord|processclose|processexist|processlist|processsetpriority|processwait|processwaitclose|strlower|strreplace|strupper|type|wingetcontrols|wingetcontrolshwnd|wingetcount|wingetexstyle|wingetid|wingetidlast|wingetlist|wingetminmax|wingetpid|wingetprocessname|wingetprocesspath|wingetstyle|wingettranscolor|wingettransparent|winmovebottom|winmovetop|winredraw|winsetalwaysontop|winsetenabled|winsetexstyle|winsetregion|winsetstyle|winsettranscolor|winsettransparent)\b</string>
+            <key>name</key>
+            <string>entity.name.function.builtin.v2.ahk</string>
+        </dict>
+
+        <key>retained_commands</key>
+        <dict>
+            <key>match</key>
+            <string>\b(?i:blockinput|clipwait|control|controlclick|controlfocus|controlget|controlgetfocus|controlgetpos|controlgettext|controlmove|controlsend|controlsendraw|controlsettext|coordmode|critical|detecthiddentext|detecthiddenwindows|drive|driveget|edit|envget|envset|exit|exitapp|fileappend|filecopy|filecreateshortcut|filedelete|fileencoding|filegetattrib|filegetshortcut|filegetsize|filegettime|filegetversion|fileinstall|filemove|fileread|filerecycle|filerecycleempty|fileselectfolder|filesetattrib|filesettime|formattime|getkeystate|groupactivate|groupadd|groupclose|groupdeactivate|gui|guicontrol|guicontrolget|hotkey|imagesearch|inidelete|iniread|iniwrite|input|inputbox|keyhistory|keywait|listhotkeys|listlines|listvars|menu|mouseclick|mouseclickdrag|mousegetpos|mousemove|msgbox|onexit|outputdebug|pause|pixelgetcolor|pixelsearch|postmessage|process|random|regdelete|regread|regwrite|reload|run|runas|runwait|send|sendevent|sendinput|sendlevel|sendmessage|sendmode|sendplay|sendraw|setcapslockstate|setcontroldelay|setdefaultmousespeed|setkeydelay|setmousedelay|setnumlockstate|setregview|setscrolllockstate|setstorecapslockmode|settimer|settitlematchmode|setwindelay|setworkingdir|shutdown|sleep|sort|soundbeep|soundget|soundplay|soundset|splitpath|statusbargettext|statusbarwait|stringcasesense|suspend|sysget|thread|tooltip|traytip|winactivate|winactivatebottom|winclose|winget|wingetclass|wingetpos|wingettext|wingettitle|winhide|winkill|winmaximize|winminimize|winminimizeall|winminimizeallundo|winmove|winrestore|winset|winsettitle|winshow|winwait|winwaitactive|winwaitclose|winwaitnotactive)\b</string>
+            <key>name</key>
+            <string>entity.name.function.builtin.v2.ahk</string>
+        </dict>
+
+        <key>keys_and_buttons</key>
+        <dict>
+            <key>match</key>
+            <string>\b(?i:shift|lshift|rshift|alt|lalt|ralt|control|lcontrol|rcontrol|ctrl|lctrl|rctrl|lwin|rwin|appskey|altdown|altup|shiftdown|shiftup|ctrldown|ctrlup|lwindown|lwinup|rwindown|rwinup|lbutton|rbutton|mbutton|wheelup|wheeldown|xbutton1|xbutton2|joy1|joy2|joy3|joy4|joy5|joy6|joy7|joy8|joy9|joy10|joy11|joy12|joy13|joy14|joy15|joy16|joy17|joy18|joy19|joy20|joy21|joy22|joy23|joy24|joy25|joy26|joy27|joy28|joy29|joy30|joy31|joy32|joyx|joyy|joyz|joyr|joyu|joyv|joypov|joyname|joybuttons|joyaxes|joyinfo|space|tab|enter|escape|esc|backspace|bs|delete|del|insert|ins|pgup|pgdn|home|end|up|down|left|right|printscreen|ctrlbreak|pause|scrolllock|capslock|numlock|numpad0|numpad1|numpad2|numpad3|numpad4|numpad5|numpad6|numpad7|numpad8|numpad9|numpadmult|numpadadd|numpadsub|numpaddiv|numpaddot|numpaddel|numpadins|numpadclear|numpadup|numpaddown|numpadleft|numpadright|numpadhome|numpadend|numpadpgup|numpadpgdn|numpadenter|f1|f2|f3|f4|f5|f6|f7|f8|f9|f10|f11|f12|f13|f14|f15|f16|f17|f18|f19|f20|f21|f22|f23|f24|browser_back|browser_forward|browser_refresh|browser_stop|browser_search|browser_favorites|browser_home|volume_mute|volume_down|volume_up|media_next|media_prev|media_stop|media_play_pause|launch_mail|launch_media|launch_app1|launch_app2|blind|click|raw|wheelleft|wheelright)\b</string>
+            <key>name</key>
+            <string>keyword.other.keys-and-buttons.ahk</string>
+        </dict>
+
+        <key>uncategorized</key>
+        <dict>
+            <key>match</key>
+            <string>\b(?i)(ltrim|rtrim|join|ahk_id|ahk_pid|ahk_class|ahk_group|ahk_exe|processname|processpath|minmax|controllist|statuscd|filesystem|setlabel|alwaysontop|mainwindow|nomainwindow|useerrorlevel|altsubmit|hscroll|vscroll|imagelist|wantctrla|wantf2|vis|visfirst|wantreturn|backgroundtrans|minimizebox|maximizebox|sysmenu|toolwindow|exstyle|check3|checkedgray|readonly|notab|lastfound|lastfoundexist|alttab|shiftalttab|alttabmenu|alttabandmenu|alttabmenudismiss|controllisthwnd|hwnd|deref|pow|bitnot|bitand|bitor|bitxor|bitshiftleft|bitshiftright|sendandmouse|mousemove|mousemoveoff|hkey_local_machine|hkey_users|hkey_current_user|hkey_classes_root|hkey_current_config|hklm|hku|hkcu|hkcr|hkcc|reg_sz|reg_expand_sz|reg_multi_sz|reg_dword|reg_qword|reg_binary|reg_link|reg_resource_list|reg_full_resource_descriptor|reg_resource_requirements_list|reg_dword_big_endian|regex|pixel|mouse|screen|relative|rgb|low|belownormal|normal|abovenormal|high|realtime|between|contains|in|is|integer|float|number|digit|xdigit|integerfast|floatfast|alpha|upper|lower|alnum|time|date|not|or|and|topmost|top|bottom|transparent|transcolor|redraw|region|id|idlast|count|list|capacity|eject|lock|unlock|label|serial|type|status|seconds|minutes|hours|days|read|parse|logoff|close|error|single|shutdown|menu|exit|reload|tray|add|rename|check|uncheck|togglecheck|enable|disable|toggleenable|default|nodefault|standard|nostandard|color|delete|deleteall|icon|noicon|tip|click|show|edit|progress|hotkey|text|picture|pic|groupbox|button|link|checkbox|radio|dropdownlist|ddl|combobox|statusbar|treeview|listbox|listview|datetime|monthcal|updown|slider|tab|tab2|activex|custom|iconsmall|tile|report|sortdesc|nosort|nosorthdr|grid|hdr|autosize|range|xm|ym|ys|xs|xp|yp|dpiscale|font|resize|owner|submit|nohide|minimize|maximize|restore|noactivate|na|cancel|destroy|center|margin|owndialogs|guiescape|guiclose|guisize|guicontextmenu|guidropfiles|tabstop|section|wrap|border|top|bottom|buttons|expand|first|lines|number|uppercase|lowercase|limit|password|multi|group|background|bold|italic|strike|underline|norm|theme|caption|delimiter|flash|style|checked|password|hidden|left|right|center|section|move|focus|hide|choose|choosestring|text|pos|enabled|disabled|visible|notimers|interrupt|priority|waitclose|unicode|tocodepage|fromcodepage\ yes|no|ok|cancel|abort|retry|ignore|force|on|off|all|send|wanttab|monitorcount|monitorprimary|monitorname|monitorworkarea|pid|this|base|extends|__get|__set|__call|__delete|__new|new|useunsetlocal|useunsetglobal|useenv|localsameasglobal)\b</string>
+        </dict>
+
+        <key>parameter_byref</key>
+        <dict>
+            <key>match</key>
+            <string>\b(?i)(ByRef)\s+([a-zA-Z0-9_]*)\s*(?:(,)|(?=\)))</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>storage.type.var.byref.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>variable.parameter.byref.function.ahk</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.separator.parameters.ahk</string>
+                </dict>
+            </dict>
+            <key>name</key>
+            <string>meta.function.parameters.byref.ahk</string>
+        </dict>
+
+        <key>parameter_byref_optional</key>
+        <dict>
+            <key>begin</key>
+            <string>\b(?i)(ByRef)\s+([a-zA-Z0-9_]*)\s*(:?\=)\s*</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>storage.type.var.byref.optional.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>variable.parameter.byref.optional.function.ahk</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.assign-default.parameter.ahk</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>(,)|(?=\))</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.separator.parameters.ahk</string>
+                </dict>
+            </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>$self</string>
+                </dict>
+            </array>
+            <key>name</key>
+            <string>meta.function.parameters.byref.optional.ahk</string>
+        </dict>
+
+        <key>parameter_optional</key>
+        <dict>
+            <key>begin</key>
+            <string>\b([a-zA-Z0-9_]*)\s*(:?\=)\s*</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>variable.parameter.optional.function.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.assign-default.parameter.ahk</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>(,)|(?=\))</string>
+            <key>endCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.separator.parameters.ahk</string>
+                </dict>
+            </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>$self</string>
+                </dict>
+            </array>
+            <key>name</key>
+            <string>meta.function.parameters.optional.ahk</string>
+        </dict>
+
+        <key>parameter_variadic</key>
+        <dict>
+            <key>match</key>
+            <string>\b([a-zA-Z0-9_]*)(\*)\s*(?=\))</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>variable.parameter.variadic.function.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.variadic-parameter.ahk</string>
+                </dict>
+            </dict>
+            <key>name</key>
+            <string>meta.function.parameter.variadic.ahk</string>
+        </dict>
+    </dict>
 
 
 </dict>

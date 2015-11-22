@@ -83,6 +83,11 @@
 
         <dict>
             <key>include</key>
+            <string>#include_directive</string>
+        </dict>
+
+        <dict>
+            <key>include</key>
             <string>#script_directives</string>
         </dict>
 
@@ -106,7 +111,7 @@
 
         <dict>
             <key>match</key>
-            <string>&lt;\=|&gt;\=|\=|\=\=|&lt;|&gt;|\!\=|&lt;&gt;|~=</string>
+            <string>&lt;\=|&gt;\=|\=\=|&lt;|&gt;|\!\=|&lt;&gt;|~=</string>
             <key>name</key>
             <string>keyword.operator.comparison.ahk</string>
         </dict>
@@ -191,7 +196,7 @@
             <string>meta.class.ahk</string>
         </dict>
 
-        <dict>
+        <!-- <dict>
             <key>begin</key>
             <string>^\s*(?=[a-zA-Z_][a-zA-Z_0-9]*?\(.*\)\s*\{(?=(?:\s+(?:;[^$\r\n]*)?)?$\n))</string>
             <key>end</key>
@@ -214,8 +219,6 @@
                 <dict>
                     <key>begin</key>
                     <string>(?=[a-zA-Z_][a-zA-Z_0-9]*\()</string>
-                    <!-- <key>contentName</key>
-                    <string>entity.name.function.ahk</string> -->
                     <key>end</key>
                     <string>(?![a-zA-Z_0-9])</string>
                     <key>patterns</key>
@@ -281,7 +284,7 @@
             </array>
             <key>name</key>
             <string>meta.function.otb-style.ahk</string>
-        </dict>
+        </dict> -->
 
         <dict>
             <key>comment</key>
@@ -378,9 +381,14 @@
             <string>#renamed_commands</string>
         </dict>
 
-        <dict>
+        <!-- <dict>
             <key>include</key>
             <string>#keys_and_buttons</string>
+        </dict> -->
+
+        <dict>
+            <key>include</key>
+            <string>#string_block</string>
         </dict>
 
         <dict>
@@ -524,11 +532,44 @@
             <string>meta.escape-sequence.ahk</string>
         </dict>
 
+        <key>string_block</key>
+        <dict>
+            <key>begin</key>
+            <string>(?&lt;!:)(=)(?=(?:\s*|\s+;.*)\n)</string>
+            <key>beginCaptures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.operator.assignment.literal.ahk</string>
+                </dict>
+            </dict>
+            <key>end</key>
+            <string>(?&lt;=\))</string>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>#comment_line</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#comment_block</string>
+                </dict>
+                <dict>
+                    <key>include</key>
+                    <string>#line_continuation_string</string>
+                </dict>
+            </array>
+            <key>name</key>
+            <string>string.other.block.ahk</string>
+        </dict>
+
         <key>string_quoted_block</key>
         <dict>
             <key>begin</key>
-            <!-- <string>("|')([ \t]+(;).*)?$\n?</string> -->
-            <string>("|')(?=(?:\s+(?:;[^\n]*)?)?$\n?)</string>
+            <!-- <string>("|')(?=(?:\s+(?:;[^\n]*)?)?$\n?)</string> -->
+            <string>("|')(?=(?:\s*|\s+;.*)\n)</string>
             <key>beginCaptures</key>
             <dict>
                 <key>1</key>
@@ -667,13 +708,13 @@
         <key>deref</key>
         <dict>
             <key>begin</key>
-            <string>(%)(?=[^$\n]+%)</string>
+            <string>(%)(?=\w+%)</string>
             <key>beginCaptures</key>
             <dict>
                 <key>1</key>
                 <dict>
                     <key>name</key>
-                    <string>keyword.operator.deref.begin.ahk</string>
+                    <string>keyword.operator.percent.begin.ahk</string>
                 </dict>
             </dict>
             <key>contentName</key>
@@ -685,9 +726,16 @@
                 <key>1</key>
                 <dict>
                     <key>name</key>
-                    <string>keyword.operator.deref.end.ahk</string>
+                    <string>keyword.operator.percent.end.ahk</string>
                 </dict>
             </dict>
+            <key>patterns</key>
+            <array>
+                <dict>
+                    <key>include</key>
+                    <string>#language_variables</string>
+                </dict>
+            </array>
             <key>name</key>
             <string>meta.deref-expression.ahk</string>
         </dict>
@@ -695,13 +743,23 @@
         <key>line_continuation_string</key>
         <dict>
             <key>begin</key>
-            <string>^\s*(\()(?=\s*(?i:(Q(?:uotes)?|[,%`\)]|Join[^\s]{0,15}|(?:Smart)?LTrim|(?:L|R)Trim0|C(?:om(?:ments?)?)?) ?)*$\n)</string>
+            <string>^\s*(\()((?i:\s*(?:\bJoin\S*|(?!;)[^\s)]+))*)(?:\s*|\s*(;.*))?\n</string>
             <key>beginCaptures</key>
             <dict>
                 <key>1</key>
                 <dict>
                     <key>name</key>
                     <string>punctuation.definition.line-continuation.begin.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.other.line-continuation.option.ahk</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>comment.line.semicolon.ahk</string>
                 </dict>
             </dict>
             <key>end</key>
@@ -716,10 +774,6 @@
             </dict>
             <key>patterns</key>
             <array>
-                <dict>
-                    <key>include</key>
-                    <string>#line_continuation_options</string>
-                </dict>
                 <dict>
                     <key>include</key>
                     <string>#escaped_char</string>
@@ -740,13 +794,23 @@
         <key>line_continuation_expression</key>
         <dict>
             <key>begin</key>
-            <string>^\s*(\()(?=\s*(?i:(Q(?:uotes)?|[,%`\)]|Join[^\s]{0,15}|(?:Smart)?LTrim|(?:L|R)Trim0|C(?:om(?:ments?)?)?) ?)*$\n)</string>
+            <string>^\s*(\()((?i:\s*(?:\bJoin\S*|\bQ(?:uotes?)?\b|(?!;)[^\s)]+))*)(?:\s*|\s*(;.*))?\n</string>
             <key>beginCaptures</key>
             <dict>
                 <key>1</key>
                 <dict>
                     <key>name</key>
                     <string>punctuation.definition.line-continuation.begin.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.other.line-continuation.option.ahk</string>
+                </dict>
+                <key>3</key>
+                <dict>
+                    <key>name</key>
+                    <string>comment.line.semicolon.ahk</string>
                 </dict>
             </dict>
             <key>end</key>
@@ -761,18 +825,6 @@
             </dict>
             <key>patterns</key>
             <array>
-                <dict>
-                    <key>include</key>
-                    <string>#line_continuation_options</string>
-                </dict>
-                <dict>
-                    <key>include</key>
-                    <string>#escaped_char</string>
-                </dict>
-                <!-- <dict>
-                    <key>include</key>
-                    <string>#deref</string>
-                </dict> -->
                 <dict>
                     <key>include</key>
                     <string>$self</string>
@@ -794,6 +846,37 @@
                     <string>keyword.other.line-continuation.option.ahk</string>
                 </dict>
             </dict>
+        </dict>
+
+        <key>include_directive</key>
+        <dict>
+            <key>match</key>
+            <string>(?:^|\s*)(#)\b(?i:(include(?:again)?))\b(?:\s*,\s*|\s+)(?:(\*i)\s+)?(\S.*?)(?:\s*|\s+(;.*))$</string>
+            <key>captures</key>
+            <dict>
+                <key>1</key>
+                <dict>
+                    <key>name</key>
+                    <string>punctuation.definition.directive.ahk</string>
+                </dict>
+                <key>2</key>
+                <dict>
+                    <key>name</key>
+                    <string>keyword.control.import.ahk</string>
+                </dict>
+                <key>4</key>
+                <dict>
+                    <key>name</key>
+                    <string>string.parameter.import.ahk</string>
+                </dict>
+                <key>5</key>
+                <dict>
+                    <key>name</key>
+                    <string>comment.line.semicolon.import.ahk</string>
+                </dict>
+            </dict>
+            <key>name</key>
+            <string>meta.directive.import.ahk</string>
         </dict>
 
         <key>script_directives</key>
@@ -918,133 +1001,6 @@
             <string>\b(?i)(ltrim|rtrim|join|ahk_id|ahk_pid|ahk_class|ahk_group|ahk_exe|processname|processpath|minmax|controllist|statuscd|filesystem|setlabel|alwaysontop|mainwindow|nomainwindow|useerrorlevel|altsubmit|hscroll|vscroll|imagelist|wantctrla|wantf2|vis|visfirst|wantreturn|backgroundtrans|minimizebox|maximizebox|sysmenu|toolwindow|exstyle|check3|checkedgray|readonly|notab|lastfound|lastfoundexist|alttab|shiftalttab|alttabmenu|alttabandmenu|alttabmenudismiss|controllisthwnd|hwnd|deref|pow|bitnot|bitand|bitor|bitxor|bitshiftleft|bitshiftright|sendandmouse|mousemove|mousemoveoff|hkey_local_machine|hkey_users|hkey_current_user|hkey_classes_root|hkey_current_config|hklm|hku|hkcu|hkcr|hkcc|reg_sz|reg_expand_sz|reg_multi_sz|reg_dword|reg_qword|reg_binary|reg_link|reg_resource_list|reg_full_resource_descriptor|reg_resource_requirements_list|reg_dword_big_endian|regex|pixel|mouse|screen|relative|rgb|low|belownormal|normal|abovenormal|high|realtime|between|contains|in|is|integer|float|number|digit|xdigit|integerfast|floatfast|alpha|upper|lower|alnum|time|date|not|or|and|topmost|top|bottom|transparent|transcolor|redraw|region|id|idlast|count|list|capacity|eject|lock|unlock|label|serial|type|status|seconds|minutes|hours|days|read|parse|logoff|close|error|single|shutdown|menu|exit|reload|tray|add|rename|check|uncheck|togglecheck|enable|disable|toggleenable|default|nodefault|standard|nostandard|color|delete|deleteall|icon|noicon|tip|click|show|edit|progress|hotkey|text|picture|pic|groupbox|button|link|checkbox|radio|dropdownlist|ddl|combobox|statusbar|treeview|listbox|listview|datetime|monthcal|updown|slider|tab|tab2|activex|custom|iconsmall|tile|report|sortdesc|nosort|nosorthdr|grid|hdr|autosize|range|xm|ym|ys|xs|xp|yp|dpiscale|font|resize|owner|submit|nohide|minimize|maximize|restore|noactivate|na|cancel|destroy|center|margin|owndialogs|guiescape|guiclose|guisize|guicontextmenu|guidropfiles|tabstop|section|wrap|border|top|bottom|buttons|expand|first|lines|number|uppercase|lowercase|limit|password|multi|group|background|bold|italic|strike|underline|norm|theme|caption|delimiter|flash|style|checked|password|hidden|left|right|center|section|move|focus|hide|choose|choosestring|text|pos|enabled|disabled|visible|notimers|interrupt|priority|waitclose|unicode|tocodepage|fromcodepage\ yes|no|ok|cancel|abort|retry|ignore|force|on|off|all|send|wanttab|monitorcount|monitorprimary|monitorname|monitorworkarea|pid|this|base|extends|__get|__set|__call|__delete|__new|new|useunsetlocal|useunsetglobal|useenv|localsameasglobal)\b</string>
         </dict>
 
-        <key>parameter_byref</key>
-        <dict>
-            <key>match</key>
-            <string>\b(?i)(ByRef)\s+([a-zA-Z0-9_]*)\s*(?:(,)|(?=\)))</string>
-            <key>captures</key>
-            <dict>
-                <key>1</key>
-                <dict>
-                    <key>name</key>
-                    <string>storage.type.var.byref.ahk</string>
-                </dict>
-                <key>2</key>
-                <dict>
-                    <key>name</key>
-                    <string>variable.parameter.byref.function.ahk</string>
-                </dict>
-                <key>3</key>
-                <dict>
-                    <key>name</key>
-                    <string>punctuation.separator.parameters.ahk</string>
-                </dict>
-            </dict>
-            <key>name</key>
-            <string>meta.function.parameters.byref.ahk</string>
-        </dict>
-
-        <key>parameter_byref_optional</key>
-        <dict>
-            <key>begin</key>
-            <string>\b(?i)(ByRef)\s+([a-zA-Z0-9_]*)\s*(:?\=)\s*</string>
-            <key>beginCaptures</key>
-            <dict>
-                <key>1</key>
-                <dict>
-                    <key>name</key>
-                    <string>storage.type.var.byref.optional.ahk</string>
-                </dict>
-                <key>2</key>
-                <dict>
-                    <key>name</key>
-                    <string>variable.parameter.byref.optional.function.ahk</string>
-                </dict>
-                <key>3</key>
-                <dict>
-                    <key>name</key>
-                    <string>keyword.operator.assign-default.parameter.ahk</string>
-                </dict>
-            </dict>
-            <key>end</key>
-            <string>(,)|(?=\))</string>
-            <key>endCaptures</key>
-            <dict>
-                <key>1</key>
-                <dict>
-                    <key>name</key>
-                    <string>punctuation.separator.parameters.ahk</string>
-                </dict>
-            </dict>
-            <key>patterns</key>
-            <array>
-                <dict>
-                    <key>include</key>
-                    <string>$self</string>
-                </dict>
-            </array>
-            <key>name</key>
-            <string>meta.function.parameters.byref.optional.ahk</string>
-        </dict>
-
-        <key>parameter_optional</key>
-        <dict>
-            <key>begin</key>
-            <string>\b([a-zA-Z0-9_]*)\s*(:?\=)\s*</string>
-            <key>beginCaptures</key>
-            <dict>
-                <key>1</key>
-                <dict>
-                    <key>name</key>
-                    <string>variable.parameter.optional.function.ahk</string>
-                </dict>
-                <key>2</key>
-                <dict>
-                    <key>name</key>
-                    <string>keyword.operator.assign-default.parameter.ahk</string>
-                </dict>
-            </dict>
-            <key>end</key>
-            <string>(,)|(?=\))</string>
-            <key>endCaptures</key>
-            <dict>
-                <key>1</key>
-                <dict>
-                    <key>name</key>
-                    <string>punctuation.separator.parameters.ahk</string>
-                </dict>
-            </dict>
-            <key>patterns</key>
-            <array>
-                <dict>
-                    <key>include</key>
-                    <string>$self</string>
-                </dict>
-            </array>
-            <key>name</key>
-            <string>meta.function.parameters.optional.ahk</string>
-        </dict>
-
-        <key>parameter_variadic</key>
-        <dict>
-            <key>match</key>
-            <string>\b([a-zA-Z0-9_]*)(\*)\s*(?=\))</string>
-            <key>captures</key>
-            <dict>
-                <key>1</key>
-                <dict>
-                    <key>name</key>
-                    <string>variable.parameter.variadic.function.ahk</string>
-                </dict>
-                <key>2</key>
-                <dict>
-                    <key>name</key>
-                    <string>punctuation.definition.variadic-parameter.ahk</string>
-                </dict>
-            </dict>
-            <key>name</key>
-            <string>meta.function.parameter.variadic.ahk</string>
-        </dict>
     </dict>
 
 

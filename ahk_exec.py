@@ -1,14 +1,12 @@
 import sublime, sublime_plugin
-import os
+import os, sys
 import subprocess
 import threading
 import functools
-import re
 import time
-from ctypes import *
+import collections
 
-class AhkProcListener(object):
-    
+class ProcessListener(object):
     def on_data(self, proc, data):
         pass
 
@@ -17,214 +15,208 @@ class AhkProcListener(object):
 
 
 class AhkAsyncProcess(object):
-	
-	def __init__(self, target, is_file, listener, ahk_exe, start_dir=False, args="", include_print=False):
-		self.ahk_exe = os.path.normpath(ahk_exe)
-		self.listener = listener
-		
-		if is_file:
-			self.run_file(target, start_dir, args)
-		else:
-			# append 'print()' function to AHK code
-			# function writes string to stdout which
-			# is captured by Sublime Text - useful for debugging
-			if include_print:
-				ahk_print = ('print(str) {\n'
-				             '\tif !DllCall("GetStdHandle", "Int", -11, "Ptr")\n'
-				             '\t\treturn false\n'
-				             '\tFileAppend, % str . "`n", *\n}')
-				target += "\n\n{}".format(ahk_print)
-			self.run_pipe(target, start_dir, args)
+    def __init__(self, cmd, listener, working_dir='', write=b'', **kwargs):
+        self.listener = listener
+        self.start_time = time.time()
+        
+        self.proc = subprocess.Popen(
+            args = cmd,
+            cwd = working_dir,
+            stdin = subprocess.PIPE,
+            stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE,
+            universal_newlines = False
+        )
 
-	def run_file(self, script, start_dir, args=""):
-		cmd = [self.ahk_exe, "/ErrorStdOut", script]
-		if not start_dir: start_dir = os.path.dirname(script)
-		if args:
-			cmd.extend(args)
-		print("Running " + " ".join(cmd[:3]) +
-		      "".join(" {!r}".format(x) for x in args))
-		self.start_time = time.time()
-		
-		self.proc = subprocess.Popen(args=cmd,
-		                             cwd=start_dir,
-		                             stdout=subprocess.PIPE,
-		                             stderr=subprocess.PIPE,
-		                             shell=True,
-		                             universal_newlines=True)
+        if len(write) > 0:
+            self.proc.stdin.write(write)
+            self.proc.stdin.close()
 
-		if self.proc.stdout:
-			threading.Thread(target=self.read_stdout).start()
+        if self.proc.stdout:
+            threading.Thread(target=self.read_stdout).start()
 
-		if self.proc.stderr:
-			threading.Thread(target=self.read_stderr).start()
+        if self.proc.stderr:
+            threading.Thread(target=self.read_stderr).start()
 
-	def run_pipe(self, code, start_dir, args=""):
-		PIPE_ACCESS_OUTBOUND = 0x00000002
-		PIPE_UNLIMITED_INSTANCES = 255
-		INVALID_HANDLE_VALUE = -1
-		
-		script_name = "AHK_" + str(windll.kernel32.GetTickCount())
-		pipe_name = "\\\\.\\pipe\\" + script_name
+    def kill(self):
+        self.proc.terminate()
+        self.listener = None
 
-		__PIPE_GA_ = windll.kernel32.CreateNamedPipeW(c_wchar_p(pipe_name),
-		                                              PIPE_ACCESS_OUTBOUND,
-		                                              0,
-		                                              PIPE_UNLIMITED_INSTANCES,
-		                                              0,
-		                                              0,
-		                                              0,
-		                                              None)
+    def exit_code(self):
+        return self.proc.poll()
 
-		__PIPE_ = windll.kernel32.CreateNamedPipeW(c_wchar_p(pipe_name),
-		                                           PIPE_ACCESS_OUTBOUND,
-		                                           0,
-		                                           PIPE_UNLIMITED_INSTANCES,
-		                                           0,
-		                                           0,
-		                                           0,
-		                                           None)
+    def read_stdout(self):
+        while True:
+            data = os.read(self.proc.stdout.fileno(), 2**15)
 
-		if (__PIPE_ == INVALID_HANDLE_VALUE or __PIPE_GA_ == INVALID_HANDLE_VALUE):
-			print("Failed to create named pipe.")
-			return False
+            if len(data) > 0:
+                if self.listener:
+                    self.listener.on_data(self, data)
+            else:
+                self.proc.stdout.close()
+                if self.listener:
+                    self.listener.on_finished(self)
+                break
 
-		cmd = [self.ahk_exe, "/ErrorStdOut", pipe_name]
-		if not start_dir: start_dir = os.path.expanduser("~")
-		if args:
-			cmd.extend(args)
-		print("Running " + " ".join(cmd[:3]) +
-		      "".join(" {!r}".format(x) for x in args))
-		self.start_time = time.time()
-		
-		self.proc = subprocess.Popen(args=cmd,
-		                             cwd=start_dir,
-		                             stdout=subprocess.PIPE,
-		                             stderr=subprocess.PIPE,
-		                             shell=True,
-		                             universal_newlines=True)
-		
-		if not self.proc.pid:
-			print('Could not open file: "' + pipe_name + '"')
+    def read_stderr(self):
+        while True:
+            data = os.read(self.proc.stderr.fileno(), 2**15)
 
-		windll.kernel32.ConnectNamedPipe(__PIPE_GA_, None)
-		windll.kernel32.CloseHandle(__PIPE_GA_)
-		windll.kernel32.ConnectNamedPipe(__PIPE_, None)
-		
-		script = chr(0xfeff) + code
-		written = c_ulong(0)
-		
-		fSuccess = windll.kernel32.WriteFile(__PIPE_,
-		                                     script,
-		                                     (len(script)+1)*2,
-		                                     byref(written),
-		                                     None)
-		if not fSuccess:
-			return False
-
-		windll.kernel32.CloseHandle(__PIPE_)
-		
-		if self.proc.stdout:
-			threading.Thread(target=self.read_stdout).start()
-
-		if self.proc.stderr:
-			threading.Thread(target=self.read_stderr).start()
-
-	def exit_code(self):
-		return self.proc.poll()
-
-	def read_stdout(self):
-		while True:
-			data = os.read(self.proc.stdout.fileno(), 2**15)
-
-			if len(data) > 0:
-				self.listener.on_data(self, data)
-			else:
-				self.proc.stdout.close()
-				self.listener.on_finished(self)
-				break
-
-	def read_stderr(self):
-		while True:
-			data = os.read(self.proc.stderr.fileno(), 2**15)
-
-			if len(data) > 0:
-				self.listener.on_data(self, data)
-			else:
-				self.proc.stderr.close()
-				break
+            if len(data) > 0:
+                if self.listener:
+                    self.listener.on_data(self, data)
+            else:
+                self.proc.stderr.close()
+                break
 
 
-class ahkCommand(sublime_plugin.TextCommand, AhkProcListener):
-	
-	def run(self, edit, cmd=None, ahk_exe="C:/Program Files/AutoHotkey/AutoHotkey.exe", **kwargs):
-		if cmd is None:
-			file_name = self.view.file_name()
-			if file_name:
-				if self.view.is_dirty():
-					cmd = None
-					is_file = False
-					kwargs['start_dir'] = os.path.dirname(file_name)
-				else:
-					cmd = file_name
-					is_file = True
-			else:
-				is_file = False
+class AhkExecCommand(sublime_plugin.WindowCommand, ProcessListener):
+    BLOCK_SIZE = 2**14
+    text_queue = collections.deque()
+    text_queue_proc = None
+    text_queue_lock = threading.Lock()
 
-			self.build(cmd, is_file, ahk_exe, **kwargs)
+    proc = None
 
-		elif cmd == "$quick_run":
-			self.build(None, False, ahk_exe, **kwargs)
+    def run(self, ahk_exe=None, ahk_script=None, working_dir='', script_args='', codepage=65001, **kwargs):
+        # clear the text_queue
+        self.text_queue_lock.acquire()
+        try:
+            self.text_queue.clear()
+            self.text_queue_proc = None
+        finally:
+            self.text_queue_lock.release()
+        
+        if not hasattr(self, 'output_view'):
+            self.output_view = self.window.create_output_panel('ahk_exec')
+        
+        self.output_view.settings().set('line_numbers', False)
+        self.output_view.settings().set('gutter', False)
+        self.output_view.settings().set('scroll_past_end', False)
+        self.output_view.assign_syntax('Packages/Text/Plain text.tmLanguage')
 
-		elif cmd == "$help":
-			subprocess.Popen(["C:/Windows/hh.exe", "C:/Program Files/AutoHotkey/AutoHotkey.chm"])
+        # From Default.exec.py
+        # Call create_output_panel a second time after assigning the above
+        # settings, so that it'll be picked up as a result buffer
+        self.window.create_output_panel('ahk_exec')
 
-		elif cmd == "$win_spy":
-			subprocess.Popen(["C:/Program Files/AutoHotkey/AU3_Spy.exe"])
+        if ahk_exe is None:
+            ahk_exe = 'C:/Program Files/AutoHotkey/AutoHotkey.exe'
+        ahk_exe = os.path.normpath(ahk_exe)
+        
+        active_view = self.window.active_view()
+        if ahk_script is None:
+            ahk_script = active_view.file_name() or '*'
 
-		elif os.path.isfile(cmd):
-			self.build(cmd, True, ahk_exe, **kwargs)
+        code = ''
+        if ahk_script == '*':
+            code = active_view.substr(sublime.Region(0, active_view.size()))
+        
+        self.encoding = 'utf-8'
+        if codepage == 0:
+            self.encoding = 'mbcs' # Python-specific, Windows only - ANSI codepage(CP_ACP)
+        elif codepage == 65001:
+            self.encoding = 'utf-8' # alt='cp65001' - new in version 3.3, Windows UTF-8
+        elif codepage == 1200:
+            self.encoding = 'utf-16-le'
+        elif codepage == 1252:
+            self.encoding = 'windows-1252'
+        
+        if working_dir == '':
+            if ahk_script == '*':
+                working_dir = os.path.expanduser('~')
+            else:
+                working_dir = os.path.dirname(ahk_script)
 
-		else:
-			self.build(cmd, False, ahk_exe, **kwargs)
+        cmd = [ahk_exe, '/CP{:d}'.format(codepage), '/ErrorStdOut', ahk_script]
+        if len(script_args) > 0:
+            cmd.extend(script_args)
 
-	def build(self, target, is_file, ahk_exe, **kwargs):
-		if is_file:
-			if os.path.splitext(target)[1] != ".ahk":
-				print("[Finished - Not an AHK script]")
-				return False
-		
-		else:
-			if target is None:
-				view = self.view
-				if view != sublime.active_window().active_view():
-					view = sublime.active_window().active_view()
+        self.proc = None
+        print('Running ' + ' '.join(cmd[:4]) + ''.join(' {!r}'.format(i) for i in script_args))
 
-				re.IGNORECASE
-				if not re.search("(AutoHotkey|Plain text)", view.settings().get("syntax")):
-					print("[Finished - Not an AHK code]")
-					return False
-				
-				target = view.substr(sublime.Region(0, view.size()))
+        self.window.run_command('show_panel', {'panel': 'output.ahk_exec'})
 
-		try:
-			self.proc = AhkAsyncProcess(target, is_file, self, ahk_exe, **kwargs)
-		except Exception as e:
-			self.print_data(None, str(e).encode('utf-8'))
+        try:
+            self.proc = AhkAsyncProcess(cmd, self, working_dir, code.encode(self.encoding), **kwargs)
 
-	def print_data(self, proc, data):
-		output = data.decode('utf-8')
-		output = output.replace("\r\n", "\n").replace("\r", "\n")
-		print(output, end="")
+            self.text_queue_lock.acquire()
+            try:
+                self.text_queue_proc = self.proc
+            finally:
+                self.text_queue_lock.release()
 
-	def finish(self, proc):
-		elapsed = time.time() - proc.start_time
-		exit_code = proc.exit_code()
-		while exit_code is None:
-			exit_code = proc.exit_code()
-		print("[Finished in {:.1f}s with exit code {:d}]".format(elapsed, exit_code))
+        except Exception as e:
+            self.append_string(None, str(e) + '\n')
+            self.append_string(None, '[Finished]')
 
-	def on_data(self, proc, data):
-		sublime.set_timeout(functools.partial(self.print_data, proc, data), 0)
+    def append_string(self, proc, str):
+        self.text_queue_lock.acquire()
 
-	def on_finished(self, proc):
-		sublime.set_timeout(functools.partial(self.finish, proc), 0)
+        was_empty = False
+        try:
+            if proc != self.text_queue_proc:
+                if proc:
+                    proc.kill()
+                return
+
+            if len(self.text_queue) == 0:
+                was_empty = True
+                self.text_queue.append('')
+
+            available = self.BLOCK_SIZE - len(self.text_queue[-1])
+
+            if len(str) < available:
+                cur = self.text_queue.pop()
+                self.text_queue.append(cur + str)
+            else:
+                self.text_queue.append(str)
+
+        finally:
+            self.text_queue_lock.release()
+
+        if was_empty:
+            sublime.set_timeout(self.service_text_queue, 0)
+
+    def service_text_queue(self):
+        self.text_queue_lock.acquire()
+
+        is_empty = False
+        try:
+            if len(self.text_queue) == 0:
+                return
+
+            str = self.text_queue.popleft()
+            is_empty = (len(self.text_queue) == 0)
+        finally:
+            self.text_queue_lock.release()
+
+        self.output_view.run_command('append', {'characters': str, 'force': True, 'scroll_to_end': True})
+
+        if not is_empty:
+            sublime.set_timeout(self.service_text_queue, 1)
+
+    def finish(self, proc):
+        elapsed = time.time() - proc.start_time
+        exit_code = proc.exit_code()
+        if exit_code == 0 or exit_code == None:
+            self.append_string(proc, '[Finished in {:.1f}s]'.format(elapsed))
+        else:
+            self.append_string(proc, '[Finished in {:.1f}s with exit code {:d}]'.format(elapsed, exit_code))
+
+        if proc != self.proc:
+            return
+
+    def on_data(self, proc, data):
+        try:
+            str = data.decode(self.encoding)
+        except:
+            str = '[Decode error - output not ' + self.encoding + ']\n'
+            proc = None
+
+        str = str.replace('\r\n', '\n').replace('\r', '\n')
+
+        self.append_string(proc, str)
+
+    def on_finished(self, proc):
+        sublime.set_timeout(functools.partial(self.finish, proc), 0)

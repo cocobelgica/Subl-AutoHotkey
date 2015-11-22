@@ -1,4 +1,21 @@
 {
-	"cmd": ["C:\\Program Files\\AutoHotkey\\AutoHotkey.exe", "/ErrorStdOut", "$file"],
-	"selector": "source.ahk"
+	"target": "ahk_exec",
+	"selector": "source.ahk, text.plain",
+	"codepage": 65001,
+	"variants": [
+		{
+			"name": "Exec Script",
+			"ahk_script": "*"
+		},
+		{
+			"name": "Exec Script (ANSI)",
+			"ahk_exe": "C:/Program Files/AutoHotkey/AutoHotkeyA32.exe",
+			"codepage": 0
+		},
+		{
+			"name": "Show AutoHotkey Build Results",
+			"target": "show_panel",
+			"panel": "output.ahk_exec"
+		}
+	]
 }

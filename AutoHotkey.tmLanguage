@@ -168,7 +168,7 @@
 
         <dict>
             <key>match</key>
-            <string>^\s*(?i)(class)\s+([a-z0-9_]+)(\s+(extends)\s+([a-z0-9\._]+))?</string>
+            <string>^\s*(?i)(class)\s+(\w+)(?:\s+(extends)\s+(\w+(?:\.\w+)*))?(?=(?:\s*\{)?\s*(?:(?&lt;=\s);.*)?$)</string>
             <key>captures</key>
             <dict>
                 <key>1</key>
@@ -181,12 +181,12 @@
                     <key>name</key>
                     <string>entity.name.type.class.ahk</string>
                 </dict>
-                <key>4</key>
+                <key>3</key>
                 <dict>
                     <key>name</key>
                     <string>keyword.control.inheritance.begin.ahk</string>
                 </dict>
-                <key>5</key>
+                <key>4</key>
                 <dict>
                     <key>name</key>
                     <string>entity.other.inherited-class.ahk</string>

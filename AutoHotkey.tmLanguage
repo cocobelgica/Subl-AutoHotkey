@@ -202,22 +202,14 @@
             <key>begin</key>
             <string>\b(?=[a-zA-Z_][a-zA-Z_0-9]*\()</string>
             <key>end</key>
-            <string>(\()</string>
-            <key>endCaptures</key>
-            <dict>
-                <key>1</key>
-                <dict>
-                    <key>name</key>
-                    <string>punctuation.definition.parameters.begin.ahk</string>
-                </dict>
-            </dict>
+            <string>\b(?=\()</string>
             <key>patterns</key>
             <array>
                 <dict>
                     <key>begin</key>
                     <string>(?=[a-zA-Z_][a-zA-Z_0-9]*)</string>
                     <key>end</key>
-                    <string>(?![a-zA-Z_0-9])</string>
+                    <string>\b(?=\()</string>
                     <key>patterns</key>
                     <array>
                         <dict>
@@ -228,7 +220,7 @@
                 </dict>
             </array>
             <key>name</key>
-            <string>meta.function-call.ahk</string>
+            <string>meta.function.ahk</string>
         </dict>
 
         <dict>
